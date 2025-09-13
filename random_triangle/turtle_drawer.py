@@ -1,12 +1,16 @@
 import turtle
 import random
 from triangle_utils import TriangleUtils
+import logging
+
+logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
 
 class TurtleDrawer:
     def __init__(self):
         self.triangle = TriangleUtils()
         self.screen = None
         self.instruction_turtle = None
+        self.debug = False
 
     def draw_instructions(self):
         if self.instruction_turtle is None:
@@ -26,8 +30,10 @@ class TurtleDrawer:
     def draw_triangle(self):
         A, B, C, angleA, angleB, angleC = self.triangle.generate_random_triangle()
 
-        print(f" A = {A}, B = {B}, C = {C}")
-        print(f" angleC = {angleC}, angleBC = {angleA}, angleCA = {angleB}")
+        if self.debug:
+            logging.info("Drawing new triangle:")
+            logging.info(f" A = {A}, B = {B}, C = {C}")
+            logging.info(f" angleC = {angleC}, angleBC = {angleA}, angleCA = {angleB}")
 
         t = turtle.Turtle()
         t.pencolor(self.triangle.generate_random_rgb_color())
@@ -44,25 +50,35 @@ class TurtleDrawer:
         t.hideturtle()
 
     def onLeftClick(self, x, y):
+        if self.debug: logging.info("Left click, drawing new triangle")
         self.draw_triangle()
         self.bind_events()
 
     def onRightClick(self, x, y):
+        if self.debug: logging.info("Right click, clearing canvas and drawing new triangle")
         self.screen.clear()
         self.screen.bgcolor("white")
         self.draw_instructions()
         self.draw_triangle()
         self.bind_events()
 
+    def on_close(self):
+        if self.debug: logging.info("Closing turtle")
+        turtle.bye()
+
     def bind_events(self):
         self.screen.onclick(self.onLeftClick, btn=1)
         self.screen.onclick(self.onRightClick, btn=3)
+        self.screen.getcanvas().winfo_toplevel().protocol("WM_DELETE_WINDOW", self.on_close)
 
-    def draw_turtle_triangle(self):
+    def draw_turtle_triangle(self, debug=False):
+        self.debug = debug
         self.screen = turtle.Screen()
         self.screen.bgcolor("white")
         self.screen.title("Random Triangle")
         self.screen.setup(800, 600)
+
+        if self.debug: logging.info("Screen initialized, drawing first triangle...")
 
         self.draw_triangle()
         self.draw_instructions()

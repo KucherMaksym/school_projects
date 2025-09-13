@@ -16,9 +16,14 @@ Turtle - 2
     
 (default - 1): """)
 
+debug = input("""
+Enable debug (Y/N) (default - N)? """)
+
+debug = debug.lower() == "y"
+
 if approach == "2":
     drawer = TurtleDrawer()
-    drawer.draw_turtle_triangle()
+    drawer.draw_turtle_triangle(debug=debug)
 else:
     drawer = TkinterDrawer()
-    drawer.draw_tkinter_triangle()
+    drawer.draw_tkinter_triangle(debug=debug)
